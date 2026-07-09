@@ -124,8 +124,7 @@ app.get('/api/stats', (req, res) => {
   const completed = tasks.filter(t => t.completed).length;
   const active = total - completed;
   
-  // BUG: Completion percentage calculation is wrong
-  const completionRate = (completed / total) * 10; // Should be * 100
+  const completionRate = (completed / total) * 100;
   
   res.json({
     total,
