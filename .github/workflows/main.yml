@@ -39,6 +39,10 @@ jobs:
           # Install Copilot CLI
           curl -fsSL https://gh.io/copilot-install | bash
 
+      - name: Authenticate Copilot
+        run: |
+          copilot login
+
       - name: Ask Copilot Agent to do work
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
