@@ -46,12 +46,4 @@ jobs:
         env:
           COPILOT_GITHUB_TOKEN: ${{ secrets.MY_FINE_GRAINED_PAT }}
         run: |
-          copilot -p "Fix a bug and open a pull request"
-
-          # 2. Push the changes
-          git add .
-          git commit -m "AI refactor"
-          git push origin HEAD
-          
-          # 3. Create the PR using GitHub CLI (which reads GH_TOKEN)
-          gh pr create --title "Automated Copilot Fixes" --body "Triggered by AI Agent"
+          copilot --autopilot -p "Find, fix a bug, and open a pull request"
