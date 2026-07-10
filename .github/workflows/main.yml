@@ -18,6 +18,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # This forces the local git configuration to use your token for branch management
+          token: ${{ secrets.MY_FINE_GRAINED_PAT }} 
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
