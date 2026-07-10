@@ -42,10 +42,9 @@ jobs:
       - name: Run Copilot CLI Agent to Make Changes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COPILOT_TOKEN: ${{ secrets.GH_COPILOT_TOKEN }}
         run: |
           # Configure Copilot to use the locally running ADO MCP server
-          copilot config --mcp '{"ado": {"command": "npx", "args": ["-y", "@tiberriver256/mcp-server-azure-devops"]}}'
+          # copilot config --mcp '{"ado": {"command": "npx", "args": ["-y", "@tiberriver256/mcp-server-azure-devops"]}}'
           
           # Run Copilot CLI agent in non-interactive mode with your custom prompt
           # This will read the repo context, use the MCP, make modifications to files
