@@ -1,9 +1,12 @@
 name: Agentic Azure DevOps MCP & Copilot Workflow
 
 on:
-  pull_request_target:
-    types: [opened, synchronize]
-    branches: [main]
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: 'Instructions for the Copilot Agent (e.g., Fix bug 123 in the main branch)'
+        required: true
+        type: string
 
 jobs:
   run-copilot-agent:
@@ -38,6 +41,6 @@ jobs:
 
       - name: Ask Copilot Agent to do work
         env:
-          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+          COPILOT_GITHUB_TOKEN: ${{ secrets.MY_FINE_GRAINED_PAT }}
         run: |
           copilot -p "Fix a bug and open a pull request"
