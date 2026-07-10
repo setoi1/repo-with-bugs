@@ -1,0 +1,84 @@
+name: Agentic Azure DevOps MCP & Copilot Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: 'Instructions for the Copilot Agent (e.g., Fix bug 123 in the main branch)'
+        required: true
+        type: string
+
+jobs:
+  run-copilot-agent:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Azure DevOps MCP Server
+        run: |
+          npm install -g @tiberriver256/mcp-server-azure-devops
+
+      - name: Start Azure DevOps MCP Server
+        run: |
+          # The MCP server will start and listen on standard I/O for the agent
+          npx -y @tiberriver256/mcp-server-azure-devops &> ado-mcp.log &
+          echo "Azure DevOps MCP Server started..."
+
+      - name: Set up Copilot Environment and CLI
+        run: |
+          # Install Copilot CLI
+          curl -fsSL https://gh.io/copilot-install | bash
+
+      - name: Run Copilot CLI Agent to Make Changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COPILOT_TOKEN: ${{ secrets.GH_COPILOT_TOKEN }}
+        run: |
+          # Configure Copilot to use the locally running ADO MCP server
+          copilot config --mcp '{"ado": {"command": "npx", "args": ["-y", "@tiberriver256/mcp-server-azure-devops"]}}'
+          
+          # Run Copilot CLI agent in non-interactive mode with your custom prompt
+          # This will read the repo context, use the MCP, make modifications to files
+          copilot agent run \
+            --model "gpt-5.2-codex" \
+            --prompt "${{ github.event.inputs.prompt }}" \
+            --non-interactive
+
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Set up Git identity
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Create a unique branch for the agent's changes
+          BRANCH_NAME="agent-changes-$(date +%s)"
+          git checkout -b $BRANCH_NAME
+          
+          # Commit changes (if Copilot made edits)
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes made by the Copilot Agent."
+            exit 0
+          else
+            git commit -m "Automated changes by Copilot CLI Agent"
+            git push -u origin $BRANCH_NAME
+            
+            # Open the Pull Request
+            gh pr create \
+              --title "Agentic Update: ${{ github.event.inputs.prompt }}" \
+              --body "This PR contains code changes generated automatically by the Copilot CLI Agent using the Azure DevOps MCP Server." \
+              --base main \
+              --head $BRANCH_NAME
+          fi
