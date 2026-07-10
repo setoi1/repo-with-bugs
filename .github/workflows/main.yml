@@ -41,7 +41,7 @@ jobs:
 
           # 1. Authenticater (The CLI needs a GitHub Token to talk to Copilot)
       - name: Authenticate Copilot
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | copilot auth login
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | copilot -i auth login
 
       # 2. Run your Prompt programmatically
       - name: Ask Copilot Agent to do work
