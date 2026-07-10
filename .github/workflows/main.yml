@@ -43,4 +43,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          copilot -p --no-ask-user "Fix a bug and open a pull request"
+          copilot -p "Fix a bug and open a pull request"
