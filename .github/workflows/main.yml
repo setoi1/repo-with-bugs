@@ -37,13 +37,9 @@ jobs:
           npx -y @tiberriver256/mcp-server-azure-devops &> ado-mcp.log &
           echo "Azure DevOps MCP Server started..."
 
-      - name: Set up Copilot Environment and CLI
-        run: |
-          # Install Copilot CLI
-          curl -fsSL https://gh.io/copilot-install | bash
-
-      - name: Ask Copilot Agent to do work
+      - name: Install Copilot CLI
+        run: npm install -g @github/copilot
+      - name: Run Copilot
+        run: copilot --yolo -p "Edit the files to fix bugs"
         env:
-          COPILOT_GITHUB_TOKEN: ${{ secrets.MY_FINE_GRAINED_PAT }}
-        run: |
-          copilot --autopilot -p "Find, fix a bug, and open a pull request"
+          GITHUB_TOKEN: ${{ github.token }}
