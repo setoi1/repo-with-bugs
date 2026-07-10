@@ -1,12 +1,9 @@
 name: Agentic Azure DevOps MCP & Copilot Workflow
 
 on:
-  workflow_dispatch:
-    inputs:
-      prompt:
-        description: 'Instructions for the Copilot Agent (e.g., Fix bug 123 in the main branch)'
-        required: true
-        type: string
+  pull_request_target:
+    types: [opened, synchronize]
+    branches: [main]
 
 jobs:
   run-copilot-agent:
